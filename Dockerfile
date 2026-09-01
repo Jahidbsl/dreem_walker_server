@@ -28,9 +28,8 @@ WORKDIR /var/www/html
 # Copy existing application directory
 COPY . /var/www/html
 
-# Explicitly configure Apache DocumentRoot to point directly to Laravel's public directory
-RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-RUN sed -i 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf
+# Copy custom apache configuration file
+COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
 # Enable Apache Mod Rewrite
 RUN a2enmod rewrite
