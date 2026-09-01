@@ -9,10 +9,27 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['category', 'variants'])->get();
-        return response()->json(['status' => true, 'data' => $products], 200);
+        $query = Product::with(['category', 'variants']);
+
+        // Search filter by product name
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        //  Category filter by category_id
+        if ($request->has('category_id') && !empty($request->category_id)) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        //  Server-side pagination (12 items per page)
+        $products = $query->paginate(12);
+
+        return response()->json([
+            'status' => true,
+            'data' => $products
+        ], 200);
     }
 
     public function store(Request $request)
@@ -42,11 +59,10 @@ class ProductController extends Controller
 
             DB::commit();
             return response()->json([
-                'status' => true, 
-                'message' => 'Product created successfully with category & variants', 
+                'status' => true,
+                'message' => 'Product created successfully with category & variants',
                 'data' => $product->load(['category', 'variants'])
             ], 201);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
@@ -97,11 +113,10 @@ class ProductController extends Controller
 
             DB::commit();
             return response()->json([
-                'status' => true, 
-                'message' => 'Product updated successfully', 
+                'status' => true,
+                'message' => 'Product updated successfully',
                 'data' => $product->load(['category', 'variants'])
             ], 200);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
