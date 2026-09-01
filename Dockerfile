@@ -37,6 +37,9 @@ RUN a2enmod rewrite
 # Install project dependencies
 RUN composer install --no-dev --optimize-autoloader
 
+# Publish Filament assets during build (not at runtime)
+RUN php artisan filament:assets --ansi || true
+
 # Set permissions and storage link
 RUN php artisan storage:link || true
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
@@ -44,5 +47,4 @@ RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
 
-# Clear cache, publish filament assets inside container, optimize and start Apache server
-CMD php artisan config:clear && php artisan cache:clear && php artisan filament:assets --ansi && php artisan optimize && apache2-foreground
+CMD php artisan config:clear && php artisan cache:clear && php artisan optimize && apache2-foreground
