@@ -39,11 +39,10 @@ RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions and storage link
 RUN php artisan storage:link || true
-RUN php artisan filament:assets || true
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
 
-# Clear cache, optimize and start Apache server
-CMD php artisan optimize:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground
+# Clear cache, publish filament assets inside container, optimize and start Apache server
+CMD php artisan config:clear && php artisan cache:clear && php artisan filament:assets --ansi && php artisan optimize && apache2-foreground
