@@ -45,6 +45,10 @@ RUN php artisan storage:link || true
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+RUN composer config --global process-timeout 600 && \
+    composer install --no-dev --optimize-autoloader --no-progress || \
+    (sleep 10 && composer install --no-dev --optimize-autoloader --no-progress)
+
 EXPOSE 80
 
 CMD php artisan config:clear && php artisan cache:clear && php artisan optimize && apache2-foreground
