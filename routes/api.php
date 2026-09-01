@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -31,3 +32,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('products', ProductController::class);
     Route::get('/products/{product}', [ProductController::class, 'show']);
+
+
+    Route::get('/run-setup-command', function () {
+    Artisan::call('optimize:clear');
+    Artisan::call('storage:link');
+    Artisan::call('filament:assets');
+    return 'Setup completed successfully!';
+});
