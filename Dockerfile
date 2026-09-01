@@ -22,6 +22,9 @@ RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd int
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Set global composer timeout to prevent network dropouts during package downloads
+RUN composer config --global process-timeout 2000
+
 # Set working directory
 WORKDIR /var/www/html
 
@@ -34,10 +37,11 @@ COPY apache.conf /etc/apache2/sites-available/000-default.conf
 # Enable Apache Mod Rewrite
 RUN a2enmod rewrite
 
-# Install project dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install project dependencies with retry safety
+RUN composer install --no-dev --optimize-autoloader --no-progress || \
+    (sleep 10 && composer install --no-dev --optimize-autoloader --no-progress)
 
-# Publish Filament assets during build (not at runtime)
+# Publish Filament assets during build
 RUN php artisan filament:assets --ansi || true
 
 # Set permissions and storage link
@@ -45,10 +49,7 @@ RUN php artisan storage:link || true
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-RUN composer config --global process-timeout 600 && \
-    composer install --no-dev --optimize-autoloader --no-progress || \
-    (sleep 10 && composer install --no-dev --optimize-autoloader --no-progress)
-
 EXPOSE 80
 
+# Clear cache, optimize and start Apache server
 CMD php artisan config:clear && php artisan cache:clear && php artisan optimize && apache2-foreground
