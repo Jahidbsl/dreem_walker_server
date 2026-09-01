@@ -2,15 +2,15 @@
 
 namespace App\Filament\Resources\Products;
 
-use App\Filament\Resources\Products\ProductResource\Pages;
-use App\Filament\Resources\Products\ProductResource\RelationManagers\VariantsRelationManager;
+
+use App\Filament\Resources\Products\Pages;
+use App\Filament\Resources\Products\RelationManagers\VariantsRelationManager;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
@@ -65,43 +65,43 @@ class ProductResource extends Resource
             ]);
     }
 
-   public static function table(Table $table): Table
-{
-    return $table
-        ->columns([
-           Tables\Columns\ImageColumn::make('firstVariant.image')
-                ->label('Image'),
-            Tables\Columns\TextColumn::make('category.name')
-                ->sortable(),
-            Tables\Columns\TextColumn::make('name')
-                ->searchable(),
-            Tables\Columns\TextColumn::make('firstVariant.price')
-                ->money('USD')
-                ->sortable(),
-            Tables\Columns\TextColumn::make('firstVariant.stock')
-                ->sortable(),
-            Tables\Columns\TextColumn::make('created_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-        ])
-        ->filters([
-            Tables\Filters\SelectFilter::make('category_id')
-        ->relationship('category', 'name')
-        ->label('Category')
-        ->searchable()
-        ->preload(),
-        ])
-        ->recordActions([
-            EditAction::make(),
-            DeleteAction::make(),
-        ])
-        ->toolbarActions([
-            BulkActionGroup::make([
-                DeleteBulkAction::make(),
-            ]),
-        ]);
-}
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\ImageColumn::make('firstVariant.image')
+                    ->label('Image'),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('firstVariant.price')
+                    ->money('USD')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('firstVariant.stock')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('category_id')
+                    ->relationship('category', 'name')
+                    ->label('Category')
+                    ->searchable()
+                    ->preload(),
+            ])
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
 
     public static function getRelations(): array
     {
