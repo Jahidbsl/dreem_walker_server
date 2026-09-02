@@ -31,6 +31,12 @@ WORKDIR /var/www/html
 # Copy existing application directory
 COPY . /var/www/html
 
+# TEMPORARY DEBUG — confirm public/ folder actually made it into the image
+RUN echo "===== public/ contents =====" && \
+    ls -la /var/www/html/public/ && \
+    echo "===== index.php check =====" && \
+    (test -f /var/www/html/public/index.php && echo "index.php EXISTS" || echo "index.php MISSING")
+
 # Copy custom apache configuration file
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
