@@ -31,11 +31,14 @@ WORKDIR /var/www/html
 # Copy existing application directory
 COPY . /var/www/html
 
-# TEMPORARY DEBUG — confirm public/ folder actually made it into the image
-RUN echo "===== public/ contents =====" && \
+# TEMPORARY DEBUG — force fresh run (cache-bust) and show hidden files explicitly
+RUN echo "BUILD_ID_$(date +%s)" && \
+    echo "===== public/ contents (including hidden files) =====" && \
     ls -la /var/www/html/public/ && \
-    echo "===== index.php check =====" && \
-    (test -f /var/www/html/public/index.php && echo "index.php EXISTS" || echo "index.php MISSING")
+    echo "===== .htaccess check =====" && \
+    (test -f /var/www/html/public/.htaccess && echo ".htaccess EXISTS" || echo ".htaccess MISSING") && \
+    echo "===== .htaccess content =====" && \
+    cat /var/www/html/public/.htaccess
 
 # Copy custom apache configuration file
 COPY apache.conf /etc/apache2/sites-available/000-default.conf
