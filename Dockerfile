@@ -46,7 +46,8 @@ RUN php artisan filament:assets --ansi || true
 
 # Set permissions and storage link
 RUN php artisan storage:link || true
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
