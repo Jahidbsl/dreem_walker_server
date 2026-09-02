@@ -52,4 +52,4 @@ RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 EXPOSE 80
 
 # Clear cache, optimize and start Apache server
-CMD php artisan storage:link || true && php artisan filament:assets --ansi || true && php artisan config:clear && php artisan cache:clear && php artisan optimize && apache2-foreground
+CMD php artisan config:clear && php artisan cache:clear && php artisan optimize && apache2-foreground
