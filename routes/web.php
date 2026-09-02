@@ -21,3 +21,21 @@ Route::get('/debug-check', function () {
             : 'apache_get_modules() not available (mod_php not used, or function disabled)',
     ]);
 });
+
+Route::get('/debug-filament', function () {
+    try {
+        $panel = \Filament\Facades\Filament::getPanel('admin');
+        return response()->json([
+            'panel_found' => true,
+            'panel_path' => $panel->getPath(),
+            'panel_id' => $panel->getId(),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => collect($e->getTrace())->take(5),
+        ], 500);
+    }
+});
